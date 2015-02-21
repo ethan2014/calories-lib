@@ -17,11 +17,9 @@ const int exercise_med = 2;
 const int exercise_high = 3;
 const int exercise_very_high = 4;
 
-const int lose_2 = 0;
-const int lose_1 = 1;
-const int stay_same = 2;
-const int gain_1 = 3;
-const int gain_2 = 4;
+const int no_goal = 0;
+const int lose_weight = 1;
+const int gain_weight = 2;
 
 const int imperial = 0;
 const int metric = 1;
@@ -70,7 +68,7 @@ private:
 	int weight_lb;
 	int weight_kg;
 
-	int calories_needed;
+	int calories;
 
 	int exercise_level;
 
