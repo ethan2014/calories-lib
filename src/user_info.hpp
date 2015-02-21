@@ -6,6 +6,11 @@
 
 namespace ct {
 
+const int calories_per_lb = 3500;
+const int calories_per_kg = 7700;
+
+const int max_name_length = 100;
+
 const int no_answer = -1;
 
 const int male = 0;
@@ -55,6 +60,14 @@ public:
 
 	void save(std::ofstream &out);
 	void load(std::ifstream &in);
+	
+	/*
+	 * uses the The Mifflin St Jeor Equation to calculate BMR (Basal metabolic rate)
+	 */
+	int calculate_calories();
+
+	int weight_lb_to_kg();
+	int height_ft_to_cm();
 	
 private:
 	std::string name;

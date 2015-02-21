@@ -1,5 +1,7 @@
 #include "user_info.hpp"
 
+#include <iostream>
+
 namespace ct {
 
 UserInfo::UserInfo() {
@@ -22,6 +24,10 @@ UserInfo::UserInfo() {
  */
 
 void UserInfo::set_name(std::string new_name) {
+	if (new_name.size() > max_name_length) {
+		throw std::string("error: name is too long");
+	}
+	
 	name = new_name;
 }
 
@@ -62,7 +68,7 @@ void UserInfo::set_height(int new_cm) {
 	height_cm = new_cm;
 }
 
-void UserInfo::set_wieght(int new_weight) {
+void UserInfo::set_weight(int new_weight) {
 	if (new_weight != no_answer && new_weight < 0) {
 		throw std::string("error: invalid value for weight");
 	}
@@ -147,6 +153,157 @@ void UserInfo::set_measurement_system(int new_system) {
  * IO
  */
 
+void UserInfo::save(std::ofstream &out) {
+	out << name << std::endl;
+	out << sex << std::endl;
+	out << age << std::endl;
+	out << height_ft << std::endl;
+	out << height_in << std::endl;
+	out << height_cm << std::endl;
+	out << weight_lb << std::endl;
+	out << weight_kg << std::endl;
+	out << calories << std::endl;
+	out << exercise_level << std::endl;
+	out << weight_goal << std::endl;
+	out << weight_gain_goal << std::endl;
+	out << weight_lose_goal << std::endl;
+	out << measurement_system << std::endl;
+}
 
+void UserInfo::load(std::ifstream &in) {
+
+}
+
+int UserInfo::calculate_calories() {
+	if (sex == no_answer) {
+		throw std::string("error: sex is needed to calculate calories");
+	}
+
+	if (age == no_answer) {
+		throw std::string("error: age is needed to calculate calories");
+	}
+
+	if (height_ft == no_answer && height_in == no_answer && height_cm == no_answer) {
+		throw std::string("error: height is needed to calculate calories");
+	}
+
+	if (weight_lb == no_answer && weight_kg == no_answer) {
+		throw std::string("error: weight is needed to calculate calories");
+	}
+
+	if (exercise_level == no_answer) {
+		throw std::string("error: exercise level is needed to calculate calories");
+	}
+
+	if (weight_goal == no_answer) {
+		throw std::string("error: weight goal is needed to calculate calories");
+	}
+
+	if (weight_gain_goal == no_answer && weight_lose_goal == no_answer) {
+		throw std::string("error: weight gain or lose goal is needed to calculate calories");
+	}
+
+	float mass;
+	float height;
+	float years = age;
+	float bmr;
+	float tdee;
+	float additional_cals;
+	float total_cals;
+
+	// we must use metric values for these equations, so convert from imperial
+	// if thats what the user is using
+	if (measurement_system == metric) {
+		mass = weight_kg;
+		height = height_cm;
+	} else if (measurement_system == imperial) {
+		mass = weight_lb_to_kg();
+		height = height_ft_to_cm();
+	} else {
+		throw std::string("error: unkown measurement system");
+	}
+
+	std::cout << "mass: " << mass << std::endl;
+	std::cout << "height: " << height << std::endl;
+	std::cout << "age: " << years << std::endl;
+
+	// calculate the users BMR
+	if (sex == male) {
+		bmr = (10 * mass) + (6.25 * height) - (5 * years) + 5;
+	} else if (sex == female) {
+		bmr = (10 * mass) + (6.25 * height) - (5 * years) - 161;
+	} else {
+		throw std::string("error: unkown sex, must be male or female");
+	}
+
+	std::cout << "bmr: " << bmr << std::endl;
+
+	// calculate TDEE based on exercise level
+	if (exercise_level == exercise_none) {
+		tdee = bmr * 1.2;
+	} else if (exercise_level == exercise_low) {
+		tdee = bmr * 1.3;
+	} else if (exercise_level == exercise_med) {
+		tdee = bmr * 1.55;
+	} else if (exercise_level == exercise_high) {
+		tdee = bmr * 1.725;
+	} else if (exercise_level == exercise_very_high) {
+		tdee = bmr * 1.9;
+	} else {
+		throw std::string("error: unkown exercise level");
+	}
+
+	std::cout << "tdee: " << tdee << std::endl;
+
+	// calculate how many calories this user needs to increase/decrease their
+	// TDEE by every day to gain/lose their desired weight
+	if (weight_goal == gain_weight) {
+		if (measurement_system == metric) {
+			additional_cals = weight_gain_goal * calories_per_kg;
+		} else {
+			additional_cals = weight_gain_goal * calories_per_lb;
+		}
+
+		additional_cals /= 7;
+		total_cals = tdee + additional_cals;
+	} else if (weight_goal == lose_weight) {
+		if (measurement_system == metric) {
+			additional_cals = weight_lose_goal * calories_per_kg;
+		} else {
+			additional_cals = weight_lose_goal * calories_per_lb;
+		}
+
+		additional_cals /= 7;
+		total_cals = tdee - additional_cals;
+	} else if (weight_goal == no_goal) {
+		total_cals = tdee;
+	} else {
+		throw std::string("error: unkown weight goal");
+	}
+
+	if (total_cals < 0) {
+		throw std::string("error: impossible calorie value");
+	}
+
+	return (int) total_cals;
+}
+
+int UserInfo::weight_lb_to_kg() {
+	if (weight_lb == no_answer) {
+		throw std::string("error: invalid weight in lbs");
+	}
+
+	return weight_lb / 2.2;
+}
+
+int UserInfo::height_ft_to_cm() {
+	if (height_ft == no_answer && height_in == no_answer) {
+		throw std::string("error: invalid height in ft and in");
+	}
+
+	int total_in = (12 * height_ft) + height_in;
+
+	return total_in * 2.54;
+}
 
 }
