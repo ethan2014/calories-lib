@@ -3,8 +3,23 @@
 namespace ct {
 
 UserInfo::UserInfo() {
+	set_name("N/A");
+	set_sex(no_answer);
+	set_age(no_answer);
+	set_height(no_answer, no_answer); // imperial 
+	set_height(no_answer); // metric
+	set_weight(no_answer);
+	set_calories(no_answer);
+	set_exercise_level(no_answer);
+	set_weight_goal(no_answer);
+	set_weight_gain_goal(no_answer);
+	set_weight_lose_goal(no_answer);
 	set_measurement_system(imperial);
 }
+
+/*
+ * setters
+ */
 
 void UserInfo::set_name(std::string new_name) {
 	name = new_name;
@@ -52,7 +67,10 @@ void UserInfo::set_wieght(int new_weight) {
 		throw std::string("error: invalid value for weight");
 	}
 
-	if (measurement_system == imperial) {
+	if (new_weight == no_answer) {
+		weight_lb = new_weight;
+		weight_kg = new_weight;
+	} else if (measurement_system == imperial) {
 		weight_lb = new_weight;
 	} else if (measurement_system == metric) {
 		weight_kg = new_weight;
@@ -87,6 +105,32 @@ void UserInfo::set_weight_goal(int new_goal) {
 	weight_goal = new_goal;
 }
 
+void UserInfo::set_weight_gain_goal(int new_gain) {
+	if (new_gain != no_answer && new_gain < 0) {
+		throw std::string("error: invalid value for weight gain goal");
+	}
+
+	if (weight_goal != gain_weight && new_gain != no_answer) {
+		set_weight_goal(gain_weight);
+	}
+
+	weight_gain_goal = new_gain;
+	weight_lose_goal = no_answer;
+}
+
+void UserInfo::set_weight_lose_goal(int new_lose) {
+	if (new_lose != no_answer && new_lose < 0) {
+		throw std::string("error: invalid value for weight lose goal");
+	}
+
+	if (weight_goal != lose_weight && new_lose != no_answer) {
+		set_weight_goal(lose_weight);
+	}
+
+	weight_gain_goal = no_answer;
+	weight_lose_goal = new_lose;
+}
+
 void UserInfo::set_measurement_system(int new_system) {
 	if (new_system != imperial && new_system != metric) {
 		throw std::string("error: invalid value for measurement system");
@@ -94,5 +138,15 @@ void UserInfo::set_measurement_system(int new_system) {
 
 	measurement_system = new_system;
 }
+
+/*
+ * getters
+ */
+
+/*
+ * IO
+ */
+
+
 
 }

@@ -37,6 +37,8 @@ public:
 	void set_calories(int new_calories);
 	void set_exercise_level(int new_level);
 	void set_weight_goal(int new_goal);
+	void set_weight_gain_goal(int new_gain);
+	void set_weight_lose_goal(int new_lose);
 	void set_measurement_system(int new_system);
 
 	std::string get_name();
@@ -73,6 +75,8 @@ private:
 	int exercise_level;
 
 	int weight_goal;
+	int weight_gain_goal;
+	int weight_lose_goal;
 
 	int measurement_system;
 };
