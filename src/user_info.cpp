@@ -1,6 +1,9 @@
 #include "user_info.hpp"
 
 #include <iostream>
+#include <fstream>
+
+#include <boost/filesystem.hpp>
 
 namespace ct {
 
@@ -17,6 +20,13 @@ UserInfo::UserInfo() {
 	set_weight_gain_goal(no_answer);
 	set_weight_lose_goal(no_answer);
 	set_measurement_system(imperial);
+
+	if (!need_info()) {
+		load();
+	}
+}
+
+UserInfo::~UserInfo() {
 }
 
 /*
@@ -111,7 +121,7 @@ void UserInfo::set_weight_goal(int new_goal) {
 	weight_goal = new_goal;
 }
 
-void UserInfo::set_weight_gain_goal(int new_gain) {
+void UserInfo::set_weight_gain_goal(float new_gain) {
 	if (new_gain != no_answer && new_gain < 0) {
 		throw std::string("error: invalid value for weight gain goal");
 	}
@@ -124,7 +134,7 @@ void UserInfo::set_weight_gain_goal(int new_gain) {
 	weight_lose_goal = no_answer;
 }
 
-void UserInfo::set_weight_lose_goal(int new_lose) {
+void UserInfo::set_weight_lose_goal(float new_lose) {
 	if (new_lose != no_answer && new_lose < 0) {
 		throw std::string("error: invalid value for weight lose goal");
 	}
@@ -149,11 +159,17 @@ void UserInfo::set_measurement_system(int new_system) {
  * getters
  */
 
+std::string UserInfo::get_name() {
+	return name;
+}
+
 /*
  * IO
  */
 
-void UserInfo::save(std::ofstream &out) {
+void UserInfo::save() {
+	std::ofstream out("user_data.txt");
+	
 	out << name << std::endl;
 	out << sex << std::endl;
 	out << age << std::endl;
@@ -170,8 +186,27 @@ void UserInfo::save(std::ofstream &out) {
 	out << measurement_system << std::endl;
 }
 
-void UserInfo::load(std::ifstream &in) {
+void UserInfo::load() {
+	std::ifstream in("user_data.txt");
+	
+	std::getline(in, name);
+	in >> sex;
+	in >> age;
+	in >> height_ft;
+	in >> height_in;
+	in >> height_cm;
+	in >> weight_lb;
+	in >> weight_kg;
+	in >> calories;
+	in >> exercise_level;
+	in >> weight_goal;
+	in >> weight_gain_goal;
+	in >> weight_lose_goal;
+	in >> measurement_system;
+}
 
+bool UserInfo::need_info() {
+	return !boost::filesystem::exists("user_data.txt");
 }
 
 int UserInfo::calculate_calories() {

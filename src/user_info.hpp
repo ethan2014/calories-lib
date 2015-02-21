@@ -2,7 +2,6 @@
 #define USER_INFO_HPP
 
 #include <string>
-#include <fstream>
 
 namespace ct {
 
@@ -32,6 +31,7 @@ const int metric = 1;
 class UserInfo {
 public:
 	UserInfo();
+	virtual ~UserInfo();
 
 	void set_name(std::string new_name);
 	void set_sex(int new_sex);
@@ -42,8 +42,8 @@ public:
 	void set_calories(int new_calories);
 	void set_exercise_level(int new_level);
 	void set_weight_goal(int new_goal);
-	void set_weight_gain_goal(int new_gain);
-	void set_weight_lose_goal(int new_lose);
+	void set_weight_gain_goal(float new_gain);
+	void set_weight_lose_goal(float new_lose);
 	void set_measurement_system(int new_system);
 
 	std::string get_name();
@@ -58,8 +58,9 @@ public:
 	int get_weight_goal();
 	int get_measurement_system();
 
-	void save(std::ofstream &out);
-	void load(std::ifstream &in);
+	void save();
+	void load();
+	bool need_info();
 	
 	/*
 	 * uses the The Mifflin St Jeor Equation to calculate BMR (Basal metabolic rate)
@@ -88,8 +89,8 @@ private:
 	int exercise_level;
 
 	int weight_goal;
-	int weight_gain_goal;
-	int weight_lose_goal;
+	float weight_gain_goal;
+	float weight_lose_goal;
 
 	int measurement_system;
 };
