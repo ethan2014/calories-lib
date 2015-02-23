@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "calorie_tracker.hpp"
+#include "ct.hpp"
 
 
 void prompt_user() {

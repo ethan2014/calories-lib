@@ -1,4 +1,4 @@
-#include "calorie_tracker.hpp"
+#include "ct.hpp"
 
 #include <boost/filesystem.hpp>
 
