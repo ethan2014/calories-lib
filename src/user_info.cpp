@@ -1,4 +1,5 @@
 #include "user_info.hpp"
+#include "calorie_tracker.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -6,34 +7,28 @@
 #include <boost/filesystem.hpp>
 
 namespace ct {
+namespace user {
 
-UserInfo::UserInfo() {
-	set_name("N/A");
-	set_sex(no_answer);
-	set_age(no_answer);
-	set_height(no_answer, no_answer); // imperial 
-	set_height(no_answer); // metric
-	set_weight(no_answer);
-	set_calories(no_answer);
-	set_exercise_level(no_answer);
-	set_weight_goal(no_answer);
-	set_weight_gain_goal(no_answer);
-	set_weight_lose_goal(no_answer);
-	set_measurement_system(imperial);
-
-	if (!need_info()) {
-		load();
-	}
-}
-
-UserInfo::~UserInfo() {
-}
+std::string name = "N/A";
+int sex = no_answer;
+int age = no_answer;
+int height_ft = no_answer;
+int height_in = no_answer;
+int height_cm = no_answer;
+int weight_lb = no_answer;
+int weight_kg = no_answer;
+int calories = no_answer;
+int exercise_level = no_answer;
+int weight_goal = no_answer;
+float weight_gain_goal = no_answer;
+float weight_lose_goal = no_answer;
+int measurement_system = imperial;
 
 /*
  * setters
  */
 
-void UserInfo::set_name(std::string new_name) {
+void set_name(std::string new_name) {
 	if (new_name.size() > max_name_length) {
 		throw std::string("error: name is too long");
 	}
@@ -41,7 +36,7 @@ void UserInfo::set_name(std::string new_name) {
 	name = new_name;
 }
 
-void UserInfo::set_sex(int new_sex) {
+void set_sex(int new_sex) {
 	if (new_sex != no_answer && new_sex != male && new_sex != female) {
 		throw std::string("error: invalid sex");
 	}
@@ -49,7 +44,7 @@ void UserInfo::set_sex(int new_sex) {
 	sex = new_sex;
 }
 
-void UserInfo::set_age(int new_age) {
+void set_age(int new_age) {
 	if (new_age != no_answer && new_age < 0) {
 		throw std::string("error: invalid age");
 	}
@@ -57,7 +52,7 @@ void UserInfo::set_age(int new_age) {
 	age = new_age;
 }
 
-void UserInfo::set_height(int new_ft, int new_in) {
+void set_height(int new_ft, int new_in) {
 	if (new_ft != no_answer && new_ft < 0) {
 		throw std::string("error: invalid feet value for height");
 	}
@@ -70,7 +65,7 @@ void UserInfo::set_height(int new_ft, int new_in) {
 	height_in = new_in;
 }
 
-void UserInfo::set_height(int new_cm) {
+void set_height(int new_cm) {
 	if (new_cm != no_answer && new_cm < 0) {
 		throw std::string("error: invalid centimeter value for height");
 	}
@@ -78,7 +73,7 @@ void UserInfo::set_height(int new_cm) {
 	height_cm = new_cm;
 }
 
-void UserInfo::set_weight(int new_weight) {
+void set_weight(int new_weight) {
 	if (new_weight != no_answer && new_weight < 0) {
 		throw std::string("error: invalid value for weight");
 	}
@@ -95,7 +90,7 @@ void UserInfo::set_weight(int new_weight) {
 	}
 }
 
-void UserInfo::set_calories(int new_calories) {
+void set_calories(int new_calories) {
 	if (new_calories != no_answer && new_calories < 0) {
 		throw std::string("error: invalid value for calories");
 	}
@@ -103,7 +98,7 @@ void UserInfo::set_calories(int new_calories) {
 	calories = new_calories;
 }
 
-void UserInfo::set_exercise_level(int new_level) {
+void set_exercise_level(int new_level) {
 	if (new_level != no_answer && new_level != exercise_none &&
 	    new_level != exercise_low && new_level != exercise_med &&
 	    new_level != exercise_high && new_level != exercise_very_high) {
@@ -113,7 +108,7 @@ void UserInfo::set_exercise_level(int new_level) {
 	exercise_level = new_level;
 }
 
-void UserInfo::set_weight_goal(int new_goal) {
+void set_weight_goal(int new_goal) {
 	if (new_goal != no_answer && new_goal < 0) {
 		throw std::string("error: invalid value for weight goal");
 	}
@@ -121,7 +116,7 @@ void UserInfo::set_weight_goal(int new_goal) {
 	weight_goal = new_goal;
 }
 
-void UserInfo::set_weight_gain_goal(float new_gain) {
+void set_weight_gain_goal(float new_gain) {
 	if (new_gain != no_answer && new_gain < 0) {
 		throw std::string("error: invalid value for weight gain goal");
 	}
@@ -134,7 +129,7 @@ void UserInfo::set_weight_gain_goal(float new_gain) {
 	weight_lose_goal = no_answer;
 }
 
-void UserInfo::set_weight_lose_goal(float new_lose) {
+void set_weight_lose_goal(float new_lose) {
 	if (new_lose != no_answer && new_lose < 0) {
 		throw std::string("error: invalid value for weight lose goal");
 	}
@@ -147,7 +142,7 @@ void UserInfo::set_weight_lose_goal(float new_lose) {
 	weight_lose_goal = new_lose;
 }
 
-void UserInfo::set_measurement_system(int new_system) {
+void set_measurement_system(int new_system) {
 	if (new_system != imperial && new_system != metric) {
 		throw std::string("error: invalid value for measurement system");
 	}
@@ -156,19 +151,12 @@ void UserInfo::set_measurement_system(int new_system) {
 }
 
 /*
- * getters
- */
-
-std::string UserInfo::get_name() {
-	return name;
-}
-
-/*
  * IO
  */
 
-void UserInfo::save() {
-	std::ofstream out("user_data.txt");
+void save() {
+	std::ofstream out(ct::home_dir_name + boost::filesystem::path::preferred_separator +
+			  ct::user_file_name);
 	
 	out << name << std::endl;
 	out << sex << std::endl;
@@ -184,11 +172,14 @@ void UserInfo::save() {
 	out << weight_gain_goal << std::endl;
 	out << weight_lose_goal << std::endl;
 	out << measurement_system << std::endl;
+
+	out.close();
 }
 
-void UserInfo::load() {
-	std::ifstream in("user_data.txt");
-	
+void load() {
+	std::ifstream in(ct::home_dir_name + boost::filesystem::path::preferred_separator +
+			 ct::user_file_name);
+		
 	std::getline(in, name);
 	in >> sex;
 	in >> age;
@@ -203,13 +194,15 @@ void UserInfo::load() {
 	in >> weight_gain_goal;
 	in >> weight_lose_goal;
 	in >> measurement_system;
+
+	in.close();
 }
 
-bool UserInfo::need_info() {
-	return !boost::filesystem::exists("user_data.txt");
-}
+/*
+ * calculating calories
+ */
 
-int UserInfo::calculate_calories() {
+int calculate_calories() {
 	if (sex == no_answer) {
 		throw std::string("error: sex is needed to calculate calories");
 	}
@@ -258,9 +251,9 @@ int UserInfo::calculate_calories() {
 		throw std::string("error: unkown measurement system");
 	}
 
-	std::cout << "mass: " << mass << std::endl;
-	std::cout << "height: " << height << std::endl;
-	std::cout << "age: " << years << std::endl;
+	//std::cout << "mass: " << mass << std::endl;
+	//std::cout << "height: " << height << std::endl;
+	//std::cout << "age: " << years << std::endl;
 
 	// calculate the users BMR
 	if (sex == male) {
@@ -271,7 +264,7 @@ int UserInfo::calculate_calories() {
 		throw std::string("error: unkown sex, must be male or female");
 	}
 
-	std::cout << "bmr: " << bmr << std::endl;
+	//std::cout << "bmr: " << bmr << std::endl;
 
 	// calculate TDEE based on exercise level
 	if (exercise_level == exercise_none) {
@@ -288,7 +281,7 @@ int UserInfo::calculate_calories() {
 		throw std::string("error: unkown exercise level");
 	}
 
-	std::cout << "tdee: " << tdee << std::endl;
+	//std::cout << "tdee: " << tdee << std::endl;
 
 	// calculate how many calories this user needs to increase/decrease their
 	// TDEE by every day to gain/lose their desired weight
@@ -323,7 +316,7 @@ int UserInfo::calculate_calories() {
 	return (int) total_cals;
 }
 
-int UserInfo::weight_lb_to_kg() {
+int weight_lb_to_kg() {
 	if (weight_lb == no_answer) {
 		throw std::string("error: invalid weight in lbs");
 	}
@@ -331,7 +324,7 @@ int UserInfo::weight_lb_to_kg() {
 	return weight_lb / 2.2;
 }
 
-int UserInfo::height_ft_to_cm() {
+int height_ft_to_cm() {
 	if (height_ft == no_answer && height_in == no_answer) {
 		throw std::string("error: invalid height in ft and in");
 	}
@@ -339,6 +332,8 @@ int UserInfo::height_ft_to_cm() {
 	int total_in = (12 * height_ft) + height_in;
 
 	return total_in * 2.54;
+}
+
 }
 
 }
