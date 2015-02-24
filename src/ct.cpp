@@ -12,6 +12,8 @@ void init() {
 	if (!needs_user_data()) {
 		ct::user::load();
 	}
+
+	ct::day::init_today();
 }
 
 void check_home_dir() {

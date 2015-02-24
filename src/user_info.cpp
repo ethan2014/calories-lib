@@ -313,7 +313,9 @@ int calculate_calories() {
 		throw std::string("error: impossible calorie value");
 	}
 
-	return (int) total_cals;
+	calories = (int) total_cals;
+
+	return calories;
 }
 
 int weight_lb_to_kg() {
