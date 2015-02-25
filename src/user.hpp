@@ -54,6 +54,7 @@ extern float weight_lose_goal;
 extern int measurement_system;
 
 void init();
+bool needs_user_data();
 
 void set_name(std::string new_name);
 void set_sex(int new_sex);

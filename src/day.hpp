@@ -10,21 +10,23 @@
 namespace ct {
 namespace day {
 
-Day current_day;
-Day today;
-
 class Day {
 public:
 	boost::gregorian::date date;
 
-	int calories;
+	std::vector<ct::meal::Meal> meals;
 
-	std::vector<Meal> meals;
+	void add_meal(ct::meal::Meal m);
 
-	void add_meal(Meal m);
+	float calories();
+
+	bool has_meals();
 };
 
-void init_today();
+extern Day current_day;
+extern Day today;
+
+void init();
 void save_day(Day day);
 void save_today();
 void save_current_day();

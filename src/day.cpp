@@ -3,14 +3,39 @@
 namespace ct {
 namespace day {
 
+Day current_day;
+Day today;
+
 // only used for testing purposes before db is implemented
 std::vector<Day> test_days;
 
-void Day::add_meal(Meal m) {
+/*
+ * functions in Day class
+ */
+
+void Day::add_meal(ct::meal::Meal m) {
 	meals.push_back(m);
 }
 
-void init_today() {
+float Day::calories() {
+	float cal = 0;
+
+	for (auto m : meals) {
+		cal += m.calories();
+	}
+
+	return cal;
+}
+
+bool Day::has_meals() {
+	return meals.size() != 0;
+}
+
+/*
+ * functions global to day namespace
+ */
+
+void init() {
 	boost::gregorian::date today_date(boost::gregorian::day_clock::local_day());
 
 	if (day_exists(today_date)) {
@@ -19,7 +44,6 @@ void init_today() {
 	} else {
 		// first time opening the app today
 		today.date = today_date;
-		today.calories = 0;
 		save_today();
 	}
 
@@ -59,7 +83,7 @@ Day get_day(boost::gregorian::date date) {
 		}
 	}
 
-	throw std::string("error: no day for given day: " + date);
+	throw std::string("error: no day for given date");
 }
 
 bool day_exists(boost::gregorian::date date) {

@@ -1,4 +1,4 @@
-#include "user_info.hpp"
+#include "user.hpp"
 #include "ct.hpp"
 
 #include <iostream>
@@ -23,6 +23,17 @@ int weight_goal = no_answer;
 float weight_gain_goal = no_answer;
 float weight_lose_goal = no_answer;
 int measurement_system = imperial;
+
+void init() {
+	if (!needs_user_data()) {
+		load();
+	}
+}
+
+bool needs_user_data() {
+	return !boost::filesystem::exists(home_dir_name + boost::filesystem::path::preferred_separator +
+					  user_file_name);
+}
 
 /*
  * setters

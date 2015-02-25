@@ -3,7 +3,9 @@
 
 #include <string>
 
-#include "user_info.hpp"
+#include "user.hpp"
+#include "meal.hpp"
+#include "food.hpp"
 #include "day.hpp"
 
 namespace ct {
@@ -14,8 +16,6 @@ const std::string user_file_name = "user_data.txt";
 
 void init();
 void check_home_dir();
-
-bool needs_user_data();
 
 }
 

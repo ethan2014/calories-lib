@@ -9,11 +9,10 @@ namespace ct {
 void init() {
 	check_home_dir();
 
-	if (!needs_user_data()) {
-		ct::user::load();
-	}
-
-	ct::day::init_today();
+	ct::user::init();
+	ct::day::init();
+	ct::meal::init();
+	ct::food::init();
 }
 
 void check_home_dir() {
@@ -25,12 +24,6 @@ void check_home_dir() {
 	if (!boost::filesystem::create_directory(home)) {
 		throw std::string("error: failed to create directory to store local data");
 	}
-}
-
-bool needs_user_data() {
-	return !boost::filesystem::exists(home_dir_name + boost::filesystem::path::preferred_separator +
-					  user_file_name);
-
 }
 
 }

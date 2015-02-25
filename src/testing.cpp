@@ -2,7 +2,6 @@
 
 #include "ct.hpp"
 
-
 void prompt_user() {
 	std::string name;
 	int sex;
@@ -78,10 +77,70 @@ void prompt_user() {
 	}
 }
 
+void list_meals() {
+	if (!ct::day::current_day.has_meals()) {
+		std::cout << "no meals eaten yet today" << std::endl;
+		return;
+	}
+
+	std::vector<ct::meal::Meal> meals = ct::day::current_day.meals;
+
+	for (auto meal : meals) {
+		std::cout << "--------------------" << std::endl;
+		std::cout << "name: " << meal.name << std::endl;
+		std::cout << "cals: " << meal.calories() << std::endl;
+	}
+			
+	std::cout << "--------------------" << std::endl;
+	std::cout << "calories for today: " << ct::day::current_day.calories()
+		  << " / " << ct::user::calculate_calories() << std::endl;
+}
+
+void add_meal() {
+	int num_items = 0;
+	std::string name;
+	
+	std::cout << "--------------------" << std::endl;
+	std::cout << "how many food items? ";
+	std::cin >> num_items;
+
+	std::cout << "what is this meal called?" << std::endl;
+	std::cin >> name;
+
+	ct::meal::Meal m;
+
+	m.name = name;
+
+	for (int i = 0; i < num_items; i++) {
+		ct::food::FoodItem food;
+		ct::food::FoodInfo info;
+		int amount;
+
+		std::cout << "name of item?" << std::endl;
+		std::cin >> name;
+
+		if (!ct::food::food_info_exists(name)) {
+			std::cout << "sorry, i dont know what that is" << std::endl;
+			continue;
+		}
+
+		std::cout << "how many servings you eat? ";
+		std::cin >> amount;
+
+		info = ct::food::known_foods[name];
+		food.info = info;
+		food.servings = amount;
+
+		m.add_food(food);
+	}
+
+	ct::day::current_day.add_meal(m);
+}
+
 int main() {
 	ct::init();
 	
-	if (ct::needs_user_data()) {
+	if (ct::user::needs_user_data()) {
 		std::cout << "new user" << std::endl;
 		prompt_user();
 		ct::user::save();
@@ -95,4 +154,25 @@ int main() {
 	} catch (std::string &s) {
 		std::cout << s << std::endl;
 	}
+
+	int input;
+
+	do {
+		std::cout << "++++++++++++++++++++" << std::endl;
+		std::cout << "what do now?" << std::endl;
+		std::cout << "-1: quit" << std::endl;
+		std::cout << "0: list todays meals" << std::endl;
+		std::cout << "1: add new meal" << std::endl;
+		std::cout << "> ";
+
+		std::cin >> input;
+
+		if (input == 0) {
+			list_meals();
+		} else if (input == 1) {
+			add_meal();
+		}
+	} while (input != -1);
+
+	std::cout << "goodbye!" << std::endl;
 }

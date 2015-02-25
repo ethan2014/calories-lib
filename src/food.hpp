@@ -6,7 +6,8 @@
 namespace ct {
 namespace food {
 
-const std::string amount_per_serving = "serving";
+const std::string no_name = "N/A";
+const std::string serving_size = "serving size";
 const std::string calories = "calories";
 const std::string fat = "fat";
 const std::string saturated_fat = "saturated fat";
@@ -43,9 +44,9 @@ const std::string copper = "copper";
 const std::string manganese = "manganese";
 const std::string chromium = "chromium";
 const std::string molybdenum = "molybdenum";
-const std::string chloride = "chloride"
+const std::string chloride = "chloride";
 
-const float no_info = -1;
+const float no_info = 0;
 
 const int no_category = -1;
 const int vegetable = 0;
@@ -56,13 +57,17 @@ const int protein_foods = 4;
 
 class FoodInfo {
 public:
-	FoodInfo();
+	std::string name;
 	
-	std::unordered_map<std::string, float> nutrient_info;
+	std::unordered_map<std::string, float> nutrients;
 
 	int category;
 
+	FoodInfo();
+
 	float calculate_servings(float amount);
+
+//	float& operator[](std::string name);
 };
 
 class FoodItem {
@@ -71,8 +76,22 @@ public:
 
 	float servings;
 
+	FoodItem();
+	
 	void amount_consumed(float amount);
+
+	float calories();
 };
+
+extern std::unordered_map<std::string, FoodInfo> known_foods;
+
+void init();
+void load_food_info();
+void save_food_info(FoodInfo f);
+
+bool food_info_exists(std::string name);
+
+FoodInfo get_food_info(std::string name);
 
 }
 }
