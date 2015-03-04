@@ -1,5 +1,7 @@
 #include "day.hpp"
 
+#include <jsoncpp/json/json.h>
+
 namespace ct {
 namespace day {
 
@@ -36,13 +38,14 @@ bool Day::has_meals() {
  */
 
 void init() {
+	// get todays date (all Day objects store that days date)
 	boost::gregorian::date today_date(boost::gregorian::day_clock::local_day());
 
 	if (day_exists(today_date)) {
-		// today is already in our database, load it
+		// the user has already opened the program today
 		today = get_day(today_date);
 	} else {
-		// first time opening the app today
+		// first time opening the program today
 		today.date = today_date;
 		save_today();
 	}
@@ -72,11 +75,33 @@ void set_current_day(Day d) {
 	current_day = d;
 }
 
+static Day parse_day(Json::value data) {
+	Day ret;
+
+	return ret;
+}
+
 std::vector<Day> list_days() {
 	// TODO: load all days from database
 	std::vector<Day> ret;
 
-	
+	Json::Value root;
+	Json::Reader reader;
+
+	std::ifstream in("../data/days.json", std::ifstream::binary);
+
+	bool success = reader.parse(in, root, false);
+
+	if (!success) {
+		throw std::string(reader.getFormatedErrorMessages());
+	}
+
+	Json::Value days = root["days"];
+
+	for (unsigned int i = 0; i < days.size(); i++) {
+		Day d = parse_day(days[i]);
+		ret.push_back(d);
+	}
 	
 	return ret;
 }

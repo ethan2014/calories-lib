@@ -88,7 +88,14 @@ std::string FoodItem::name() {
  * functions in global to foods namespace
  */
 
-static FoodInfo parse_json(const Json::Value item) {
+
+
+void init() {
+	// load all known foods from the hard drive
+	load_food_info();
+}
+
+static FoodInfo parse_food(const Json::Value item) {
 	FoodInfo ret;
 
 	ret.id = item["id"].asUInt();
@@ -103,41 +110,13 @@ static FoodInfo parse_json(const Json::Value item) {
 	return ret;
 }
 
-void init() {
-	load_food_info();
-}
-
 void load_food_info() {
-	// TODO: fill the known_foods vector with food info from
-	// our database of known food info
-
-	// for now, add hard coded test foods
-
-	/*
-	FoodInfo f;
-
-	f.name = "milk";
-	f.nutrients[serving_size] = 1;
-	f.nutrients[calories] = 150;
-	f.nutrients[fat] = 8;
-	f.nutrients[saturated_fat] = 5;
-	f.nutrients[mono_fat] = 2.5;
-	f.nutrients[cholesterol] = 35;
-	f.nutrients[sodium] = 120;
-	f.nutrients[potassium] = 380;
-	f.nutrients[carbs] = 12;
-	f.nutrients[sugar] = 11;
-	f.nutrients[protein] = 8;
-
-	save_food_info(f);
-	*/
-	
 	Json::Value root;
 	Json::Reader reader;
 	
-	std::ifstream test("../data/food.json", std::ifstream::binary);
+	std::ifstream in("../data/food.json", std::ifstream::binary);
 
-	bool success = reader.parse(test, root, false);
+	bool success = reader.parse(in, root, false);
 
 	if (!success) {
 		throw std::string(reader.getFormatedErrorMessages());
@@ -146,7 +125,7 @@ void load_food_info() {
 	Json::Value array = root["foods"];
 
 	for (unsigned int i = 0; i < array.size(); i++) {
-		FoodInfo food = parse_json(array[i]);
+		FoodInfo food = parse_food(array[i]);
 		known_foods[food.name] = food;
 	}
 }

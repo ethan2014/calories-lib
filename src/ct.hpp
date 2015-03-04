@@ -16,7 +16,6 @@ const std::string home_dir_name = "../data/calorie_tracker";
 const std::string user_file_name = "user_data.txt";
 
 void init();
-void check_home_dir();
 
 }
 

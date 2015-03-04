@@ -167,16 +167,23 @@ void remove_meal() {
 }
 
 int main() {
+	// this is the first thing that gets called for the calorie tracker (ct)
+	// library, it will initialize everything it needs (see ct.cpp for the
+	// implementation of this function)
 	ct::init();
-	
+
+	// the ct library will know if the user has never used to program before,
+	// so if thats the case we need their personal info
 	if (ct::user::needs_user_data()) {
-		std::cout << "new user" << std::endl;
 		prompt_user();
 		ct::user::save();
 	} else {
 		std::cout << "welcome back " << ct::user::name << std::endl;
 	}
 
+	// this will just tell the user how many calories they need to eat every day, it
+	// can throw exception so it is wrapped in a try/catch (see user.cpp for the implementation
+	// of calculate_calories())
 	try {
 		std::cout << "to achieve your goal, you must consume " << ct::user::calculate_calories()
 			  << " calories every day" << std::endl;
@@ -184,6 +191,8 @@ int main() {
 		std::cout << s << std::endl;
 	}
 
+	// this will just continue to ask the user what they want to do, its like
+	// the main menu for the program
 	int input;
 
 	do {

@@ -25,6 +25,8 @@ float weight_lose_goal = no_answer;
 int measurement_system = imperial;
 
 void init() {
+	// if the file that stores user data exists, then we just
+	// need to load their data from that file
 	if (!needs_user_data()) {
 		load();
 	}

@@ -30,11 +30,12 @@ void Meal::add_food(ct::food::FoodItem f) {
  */
 
 void init() {
+	// load all the known meals from the hard drive
 	load_meals();
 }
 
 void load_meals() {
-	// TODO: fill the know_meals vector with meals from our
+	// TODO: fill the know_meals map with meals from our
 	// known meals database
 }
 
