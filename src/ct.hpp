@@ -3,6 +3,7 @@
 
 #include <string>
 
+#include "db.hpp"
 #include "user.hpp"
 #include "meal.hpp"
 #include "food.hpp"

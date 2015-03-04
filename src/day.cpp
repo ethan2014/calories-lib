@@ -73,7 +73,12 @@ void set_current_day(Day d) {
 }
 
 std::vector<Day> list_days() {
-	return test_days;
+	// TODO: load all days from database
+	std::vector<Day> ret;
+
+	
+	
+	return ret;
 }
 
 Day get_day(boost::gregorian::date date) {

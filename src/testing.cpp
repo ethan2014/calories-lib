@@ -1,4 +1,5 @@
 #include <iostream>
+#include <limits>
 
 #include "ct.hpp"
 
@@ -87,13 +88,33 @@ void list_meals() {
 
 	for (auto meal : meals) {
 		std::cout << "--------------------" << std::endl;
-		std::cout << "name: " << meal.name << std::endl;
-		std::cout << "cals: " << meal.calories() << std::endl;
+		std::cout << "meal name: " << meal.name << std::endl;
+		std::cout << "total calories: " << meal.calories() << std::endl;
+
+		for (auto food : meal.foods) {
+			std::cout << "food: " << food.name() << std::endl;
+			std::cout << "servings: " << food.servings << std::endl;
+			std::cout << "calories: " << food.calories() << std::endl;
+		}
 	}
 			
 	std::cout << "--------------------" << std::endl;
 	std::cout << "calories for today: " << ct::day::current_day.calories()
 		  << " / " << ct::user::calculate_calories() << std::endl;
+}
+
+void new_food(std::string name) {
+	ct::food::FoodInfo info;
+
+	info.name = name;
+
+	std::cout << "serving size? ";
+	std::cin >> info[ct::food::serving_size];
+
+	std::cout << "calories per serving? ";
+	std::cin >> info[ct::food::calories];
+
+	ct::food::save_food_info(info);
 }
 
 void add_meal() {
@@ -103,9 +124,10 @@ void add_meal() {
 	std::cout << "--------------------" << std::endl;
 	std::cout << "how many food items? ";
 	std::cin >> num_items;
+	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-	std::cout << "what is this meal called?" << std::endl;
-	std::cin >> name;
+	std::cout << "what is this meal called? ";
+	std::getline(std::cin, name);
 
 	ct::meal::Meal m;
 
@@ -116,12 +138,12 @@ void add_meal() {
 		ct::food::FoodInfo info;
 		int amount;
 
-		std::cout << "name of item?" << std::endl;
-		std::cin >> name;
+		std::cout << "name of item? ";
+		std::getline(std::cin, name);
 
 		if (!ct::food::food_info_exists(name)) {
-			std::cout << "sorry, i dont know what that is" << std::endl;
-			continue;
+			std::cout << "I dont know what that is yet, lets add it" << std::endl;
+			new_food(name);
 		}
 
 		std::cout << "how many servings you eat? ";
@@ -135,6 +157,13 @@ void add_meal() {
 	}
 
 	ct::day::current_day.add_meal(m);
+}
+
+void remove_meal() {
+	std::string name;
+
+	std::cout << "name of meal? ";
+	std::getline(std::cin, name);
 }
 
 int main() {
@@ -163,14 +192,18 @@ int main() {
 		std::cout << "-1: quit" << std::endl;
 		std::cout << "0: list todays meals" << std::endl;
 		std::cout << "1: add new meal" << std::endl;
+		std::cout << "2: remove meal" << std::endl;
 		std::cout << "> ";
 
 		std::cin >> input;
+		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 		if (input == 0) {
 			list_meals();
 		} else if (input == 1) {
 			add_meal();
+		} else if (input == 2) {
+			remove_meal();
 		}
 	} while (input != -1);
 

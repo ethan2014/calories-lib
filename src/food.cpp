@@ -1,6 +1,9 @@
 #include "food.hpp"
 
+#include <fstream>
 #include <unordered_map>
+
+#include <jsoncpp/json/json.h>
 
 namespace ct {
 namespace food {
@@ -33,6 +36,11 @@ FoodInfo::FoodInfo() {
 
 }
 
+unsigned int FoodInfo::get_id() {
+	std::hash<std::string> hash;
+	return (unsigned int) hash(name);
+}
+
 float FoodInfo::calculate_servings(float amount) {
 	float size = nutrients[serving_size];
 
@@ -48,9 +56,9 @@ float FoodInfo::calculate_servings(float amount) {
 }
 
 
-//float& FoodInfo::operator[](std::string name) {
-//	return nutrients[name];
-//}
+float& FoodInfo::operator[](std::string name) {
+	return nutrients[name];
+}
 
 /*
  * functions in FoodItem class
@@ -72,9 +80,28 @@ float FoodItem::calories() {
 	return servings * info.nutrients[ct::food::calories];
 }
 
+std::string FoodItem::name() {
+	return info.name;
+}
+
 /*
  * functions in global to foods namespace
  */
+
+static FoodInfo parse_json(const Json::Value item) {
+	FoodInfo ret;
+
+	ret.id = item["id"].asUInt();
+	ret.category = item["category"].asInt();
+	ret.name = item["name"].asString();
+	
+	Json::Value nutrition = item["nutrition"];
+	for (auto const& id : nutrition.getMemberNames()) {
+		ret.nutrients[id] = nutrition[id].asFloat();
+	}
+
+	return ret;
+}
 
 void init() {
 	load_food_info();
@@ -86,6 +113,7 @@ void load_food_info() {
 
 	// for now, add hard coded test foods
 
+	/*
 	FoodInfo f;
 
 	f.name = "milk";
@@ -100,8 +128,27 @@ void load_food_info() {
 	f.nutrients[carbs] = 12;
 	f.nutrients[sugar] = 11;
 	f.nutrients[protein] = 8;
-	known_foods[f.name] = f;
+
+	save_food_info(f);
+	*/
 	
+	Json::Value root;
+	Json::Reader reader;
+	
+	std::ifstream test("../data/food.json", std::ifstream::binary);
+
+	bool success = reader.parse(test, root, false);
+
+	if (!success) {
+		throw std::string(reader.getFormatedErrorMessages());
+	}
+
+	Json::Value array = root["foods"];
+
+	for (unsigned int i = 0; i < array.size(); i++) {
+		FoodInfo food = parse_json(array[i]);
+		known_foods[food.name] = food;
+	}
 }
 
 void save_food_info(FoodInfo f) {
@@ -111,7 +158,37 @@ void save_food_info(FoodInfo f) {
 
 	known_foods[f.name] = f;
 
-	// TODO: add this food info to the food info database
+	Json::Value root;
+	Json::Reader reader;
+	Json::StyledStreamWriter writer;
+	
+	std::ifstream in("../data/food.json", std::ifstream::binary);
+
+	bool success = reader.parse(in, root, false);
+
+	if (!success) {
+		throw std::string(reader.getFormatedErrorMessages());
+	}
+
+	Json::Value array = root["foods"];
+	Json::Value new_item;
+	Json::Value nutrients;
+
+	new_item["id"] = f.id;
+	new_item["name"] = f.name;
+	new_item["category"] = f.category;
+
+	for (auto it : f.nutrients) {
+		nutrients[it.first] = it.second;
+	}
+
+	new_item["nutrition"] = nutrients;
+
+	root["foods"].append(new_item);
+
+	in.close();
+	std::ofstream out("../data/food.json");
+	writer.write(out, root);
 }
 
 bool food_info_exists(std::string name) {

@@ -1,6 +1,7 @@
 #ifndef FOOD_HPP
 #define FOOD_HPP
 
+#include <functional>
 #include <unordered_map>
 
 namespace ct {
@@ -58,16 +59,17 @@ const int protein_foods = 4;
 class FoodInfo {
 public:
 	std::string name;
-	
 	std::unordered_map<std::string, float> nutrients;
 
 	int category;
+	unsigned int id;
 
 	FoodInfo();
 
-	float calculate_servings(float amount);
+	unsigned int get_id();
 
-//	float& operator[](std::string name);
+	float calculate_servings(float amount);
+	float& operator[](std::string name);
 };
 
 class FoodItem {
@@ -81,6 +83,8 @@ public:
 	void amount_consumed(float amount);
 
 	float calories();
+
+	std::string name();
 };
 
 extern std::unordered_map<std::string, FoodInfo> known_foods;

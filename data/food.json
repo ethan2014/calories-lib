@@ -1,0 +1,57 @@
+
+{
+    "foods" : 
+    [
+	
+	{
+	    "category" : 1,
+	    "id" : 0,
+	    "name" : "apple",
+	    "nutrition" : 
+	    {
+		"calories" : 100.0,
+		"fat" : 10.0
+	    }
+	},
+	
+	{
+	    "category" : -1,
+	    "id" : 0,
+	    "name" : "asdf",
+	    "nutrition" : 
+	    {
+		"calories" : 123.0,
+		"carbs" : 0.0,
+		"fat" : 0.0,
+		"mono fat" : 0.0,
+		"poly fat" : 0.0,
+		"protein" : 0.0,
+		"saturated fat" : 0.0,
+		"serving size" : 123.0,
+		"sodium" : 0.0,
+		"sugar" : 0.0,
+		"trans fat" : 0.0
+	    }
+	},
+	
+	{
+	    "category" : -1,
+	    "id" : 0,
+	    "name" : "",
+	    "nutrition" : 
+	    {
+		"calories" : 45.0,
+		"carbs" : 0.0,
+		"fat" : 0.0,
+		"mono fat" : 0.0,
+		"poly fat" : 0.0,
+		"protein" : 0.0,
+		"saturated fat" : 0.0,
+		"serving size" : 34.0,
+		"sodium" : 0.0,
+		"sugar" : 0.0,
+		"trans fat" : 0.0
+	    }
+	}
+    ]
+}

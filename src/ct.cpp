@@ -2,13 +2,12 @@
 
 #include <boost/filesystem.hpp>
 
-#include <fstream>
-
 namespace ct {
 
 void init() {
 	check_home_dir();
 
+	ct::db::init();
 	ct::user::init();
 	ct::day::init();
 	ct::meal::init();
